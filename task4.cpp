@@ -206,6 +206,7 @@ int main()
 	cout << a.determinant() << endl;
 	a.transposition();
 	a.show(); cout << endl;
-
+	
+	cout << "Hi" << endl;
 	return 0;
 }
