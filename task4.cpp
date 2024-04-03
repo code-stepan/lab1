@@ -24,7 +24,7 @@ public:
 	// double* operator[](int index);
 	double determinant();
 	void transposition();
-	// matrix reverse();
+	matrix inverse() const;
 };
 
 matrix::matrix() {
@@ -162,7 +162,7 @@ double matrix::determinant() {
 				m.elements[row][col] -= m.elements[row][i] * m.elements[i][col] / pivotElement;
 		}
 	}
-	det = d;
+
 	return d;
 }
 
@@ -174,18 +174,53 @@ void matrix::transposition() {
 	}
 }
 
-// м-да...
-//matrix matrix::reverse() {
-//	matrix res = *this;
-//	for (int i = 0; i < n; i++) {
-//		for (int j = 0; j < n; j++) {
-//			if ((i + j) % 2 == 1) res.elements[i][j] = -elements[i][j];
-//			else res.elements[i][j] = elements[i][j];
-//		}
-//	}
-//}
+matrix matrix::inverse() const {
+	matrix temp = *this; //  опи€ прошлой матрицы
+	matrix identity = *this; // ≈динична€ матрица
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			identity.elements[i][j] = 0;
+		}
+	}
+	for (int i = 0; i < n; i++) {
+		identity.elements[i][i] = 1.0;
+	}
 
-// м-да... x2 // может "()" перегрузить?)
+	for (size_t i = 0; i < n; i++) {
+		size_t pivot_row = i;
+		for (size_t j = i + 1; j < n; j++) {
+			if (abs(temp.elements[j][i]) > abs(temp.elements[pivot_row][i])) {
+				pivot_row = j;
+			}
+		}
+
+		if (pivot_row != i) {
+			for (size_t j = 0; j < n; j++) {
+				swap(temp.elements[i][j], temp.elements[pivot_row][j]);
+				swap(identity.elements[i][j], identity.elements[pivot_row][j]);
+			}
+		}
+
+		double pivot = temp.elements[i][i];
+		for (size_t j = 0; j < n; j++) {
+			temp.elements[i][j] /= pivot;
+			identity.elements[i][j] /= pivot;
+		}
+
+		for (size_t k = 0; k < n; k++) {
+			if (k != i) {
+				double factor = temp.elements[k][i];
+				for (size_t j = 0; j < n; j++) {
+					temp.elements[k][j] -= factor * temp.elements[i][j];
+					identity.elements[k][j] -= factor * identity.elements[i][j];
+				}
+			}
+		}
+	}
+	return identity;
+}
+
+// м-да... // может "()" перегрузить?)))
 //double* matrix::operator[](int index) {
 //	return elements[index];
 //}
@@ -207,6 +242,7 @@ int main()
 	a.transposition();
 	a.show(); cout << endl;
 	
-	cout << "Hi" << endl;
+	c = a.inverse();
+	c.show();
 	return 0;
 }
